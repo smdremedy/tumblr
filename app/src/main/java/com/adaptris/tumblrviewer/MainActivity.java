@@ -1,5 +1,7 @@
 package com.adaptris.tumblrviewer;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,8 +15,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.squareup.picasso.OkHttpDownloader;
+import com.squareup.picasso.Picasso;
+
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, PostListFragment.Callback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +45,13 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        Picasso.Builder builder = new Picasso.Builder(this);
+        builder.downloader(new OkHttpDownloader(this,Integer.MAX_VALUE));
+        Picasso built = builder.build();
+        built.setIndicatorsEnabled(true);
+        built.setLoggingEnabled(true);
+        Picasso.setSingletonInstance(built);
     }
 
     @Override
@@ -95,5 +107,11 @@ public class MainActivity extends AppCompatActivity
                 .beginTransaction()
                 .replace(R.id.postListContainer, PostListFragment.newInstance(blog))
                 .commit();
+    }
+
+    @Override
+    public void openBlog(String url) {
+        Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        startActivity(myIntent);
     }
 }
